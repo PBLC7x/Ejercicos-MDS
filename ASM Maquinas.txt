@@ -1,0 +1,200 @@
+------------------------------------------------- -------------------------------------------------- ----------------------------
+Ejercicio 1 
+-------------------------------------------------- -------------------------------------------------- ----------------------------
+biblioteca IEEE;
+utilice IEEE.STD_LOGIC_1164.ALL;
+
+la entidad tren es
+    Puerto (tiempo, sensor, clk, Sp: en STD_LOGIC;
+         PA, PC, PARO, AVANCE: fuera STD_LOGIC;
+         Q1, Q0: inout STD_LOGIC);
+end tren;
+
+arquitectura asm de tren es
+	El tipo de estados es (A, B, C, D);
+	señal edo_pres, edo_fut: estados;
+comenzar
+	p_estados: proceso (edo_pres, tiempo, sensor, sp)
+comenzar 
+
+caso edo_pres es
+cuando A => PA <= '1'; PC <= '0'; PARO <= '0'; AVANCE <= '0'; Q1 <= '0'; Q0 <= '0'; 	
+																				    --estado cero
+	si TIEMPO = '1' entonces 
+	edo_fut <= B;
+	demás
+	edo_fut <= A;
+	terminara si;
+	
+cuando B => PA <= '0'; PC <= '1'; PARO <= '0'; AVANCE <= '0'; Q1 <= '0'; Q0 <= '1';
+																					  --estado uno
+	si SP = '1' entonces 
+	edo_fut <= C;
+	demás
+	edo_fut <= B;
+	terminara si;
+	
+cuando C => PA <= '0'; PC <= '0'; PARO <= '0'; AVANCE <= '1'; Q1 <= '1'; Q0 <= '0';
+																					  --estado dos
+ 	si sensor = '1' entonces 
+	edo_fut <= D;
+	demás
+	edo_fut <= C;
+	terminara si;
+	
+cuando D => PA <= '0'; PC <= '0'; PARO <= '1'; AVANCE <= '0'; Q1 <= '1'; Q0 <= '1';
+	edo_fut <= A;
+	
+caso final;
+finalizar proceso p_estados;
+- inicia segundo proceso
+p_reloj: proceso (clk) comienza
+	si (clk'event y clk = '1') entonces
+		edo_pres <= edo_fut;
+	terminara si;
+	finalizar el proceso p_reloj;
+	terminar asm;
+  -------------------------------------------------- -------------------------------------------------- ----------------------------------
+  Ejercicio 2
+  -------------------------------------------------- -------------------------------------------------- ----------------------------------
+  biblioteca IEEE;
+utilice IEEE.STD_LOGIC_1164.ALL;
+
+entidad maquina es
+    Puerto (CLK, MONEDA, MP, PRECIO, LC, LS: en STD_LOGIC;
+           CAP, LIMPIA, SIRVE, CAMBIO, DEC, IM, Q2, Q1, Q0: fuera STD_LOGIC);
+final maquina;
+
+arquitectura arq_maq de maquina es
+
+el tipo de estados es (A, B, C, D, E, F, G, H);
+señal edo_pres, edo_fut: estados;
+comenzar
+p_estados: inicio del proceso (edo_pres, MONEDA, MP, PRECIO, LC, LS)
+caso edo_pres es
+cuando A => CAP <= '0'; LIMPIA <= '0'; SIRVE <= '0'; CAMBIO <= '0'; DEC <= '0'; MI <= '1';
+			Q2 <= '0'; Q1 <= '0'; Q0 <= '0';
+			si MONEDA = '1' entonces edo_fut <= B; más edo_fut <= A; terminara si;
+
+
+cuando B => CAP <= '0'; LIMPIA <= '0'; SIRVE <= '0'; CAMBIO <= '0'; DEC <= '0'; MI <= '0';
+			Q2 <= '0'; Q1 <= '0'; Q0 <= '1';
+			si MONEDA = '0' entonces edo_fut <= C; más edo_fut <= B; terminara si;
+
+
+cuando C => CAP <= '0'; LIMPIA <= '0'; SIRVE <= '0'; CAMBIO <= '0'; DEC <= '0'; MI <= '0';
+			Q2 <= '0'; Q1 <= '1'; Q0 <= '0';
+			si MP = '0' entonces edo_fut <= D; más edo_fut <= A; terminara si;
+
+
+cuando D => CAP <= '0'; LIMPIA <= '0'; SIRVE <= '0'; CAMBIO <= '0'; DEC <= '0'; MI <= '0';
+			Q2 <= '0'; Q1 <= '1'; Q0 <= '1';
+			si PRECIO = '0' entonces edo_fut <= H; más edo_fut <= E; terminara si;
+
+
+cuando E => CAP <= '0'; LIMPIA <= '0'; SIRVE <= '1'; CAMBIO <= '0'; DEC <= '0'; MI <= '0';
+			Q2 <= '1'; Q1 <= '0'; Q0 <= '0';
+			si LS = '0' entonces edo_fut <= E; más edo_fut <= F; terminara si;
+
+
+cuando F => CAP <= '1'; LIMPIA <= '1'; SIRVE <= '0'; CAMBIO <= '0'; DEC <= '0'; MI <= '0';
+			Q2 <= '1'; Q1 <= '0'; Q0 <= '1'; edo_fut <= A;
+
+
+cuando G => CAP <= '0'; LIMPIA <= '0'; SIRVE <= '0'; CAMBIO <= '1'; DEC <= '0'; MI <= '0';
+			Q2 <= '1'; Q1 <= '1'; Q0 <= '1';
+			si LC = '0' entonces edo_fut <= G; más edo_fut <= H; terminara si;
+			
+
+cuando H => CAP <= '0'; LIMPIA <= '0'; SIRVE <= '0'; CAMBIO <= '0'; DEC <= '1'; MI <= '0';
+			edo_fut <= D;
+
+caso final;
+finalizar proceso p_estados;
+
+p_reloj: proceso (clk) comienza
+
+	si (clk 'evento y clk =' 1 ') entonces
+		edo_pres <= edo_fut;
+		terminara si;
+	finalizar el proceso p_reloj;
+
+end arq_maq;
+  -------------------------------------------------- -------------------------------------------------- ----------------------------------
+  Ejercicio 3
+  -------------------------------------------------- -------------------------------------------------- ----------------------------------
+  biblioteca IEEE;
+utilice IEEE.STD_LOGIC_1164.ALL;
+
+entidad Controlador_Alarma es
+    Puerto (clk, fx, cont4, boton: en STD_LOGIC;
+           reset, inc, activa, alarma: out STD_LOGIC);
+end Controlador_Alarma;
+
+La arquitectura del comportamiento de Controlador_Alarma es
+estados de tipo es (A, B, C, D, E, F, G, H, I, J, K, L);
+señal edo_pres, edo_fut: estados;
+comenzar
+  p_estados: proceso (edo_pres, clk, fx, cont4, boton)
+comenzar
+caso edo_pres es
+    cuando A => reiniciar <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+	      edo_fut <= B;
+	 cuando B => reiniciar <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+         si boton = '1' entonces
+			   edo_fut <= C;
+			demás
+			   edo_fut <= B;
+			terminara si;
+	 cuando C => reiniciar <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+         si fx = '1' entonces
+			   edo_fut <= D;
+			demás
+			   edo_fut <= H;
+			terminara si;
+	 cuando D => reset <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+         si boton = '1' entonces
+			   edo_fut <= D;
+			demás
+			   edo_fut <= E;
+			terminara si;
+	 cuando E => reiniciar <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+			si cont4 = '1' entonces
+			   edo_fut <= G;
+			demás
+			   edo_fut <= F;
+			terminara si;
+	 cuando F => reiniciar <= '0'; activa <= '0'; alarma <= '0'; inc <= '1';
+			   edo_fut <= B;
+	 cuando G => reiniciar <= '0'; activa <= '1'; inc <= '0'; alarma <= '0';
+			   edo_fut <= A;
+	 cuando H => reiniciar <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+         si boton = '1' entonces
+			   edo_fut <= H;
+			demás
+			   edo_fut <= I;
+			terminara si;
+	 cuando I => restablecer <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+         si cont4 = '1' entonces
+			   edo_fut <= L;
+			demás
+			   edo_fut <= J;
+			terminara si;
+	 cuando J => reiniciar <= '0'; inc <= '1'; activa <= '0'; alarma <= '0';
+			   edo_fut <= K;
+	 cuando K => reset <= '0'; inc <= '0'; activa <= '0'; alarma <= '0';
+         si boton = '1' entonces
+			   edo_fut <= H;
+			demás
+			   edo_fut <= K;
+			terminara si;
+	 cuando L => reiniciar <= '0'; inc <= '0'; activa <= '0'; alarma <= '1';
+			   edo_fut <= A;
+caso final;
+proceso finalizado;
+reloj: iniciar proceso (clk)
+    si (clk 'evento y clk =' 1 ') entonces
+	     edo_pres <= edo_fut;
+	 terminara si;
+proceso finalizado;
+end Behavioral;
